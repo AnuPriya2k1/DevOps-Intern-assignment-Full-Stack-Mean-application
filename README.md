@@ -157,5 +157,21 @@ HTTP/1.1 200 OK
 Test backend API:
 curl http://localhost/api/users
 
+
+
+
+
+
+Screenshots below :
+
+<img width="1878" height="465" alt="image" src="https://github.com/user-attachments/assets/7c0a97b5-60e3-43bc-a902-8cd7517e5c71" />
+<img width="1918" height="787" alt="docker image push and pull" src="https://github.com/user-attachments/assets/dcfb31fb-a8c9-4c7a-a06c-91f7ed765a9a" />
+<img width="1918" height="960" alt="Server running successfully" src="https://github.com/user-attachments/assets/adbccdbb-649b-4c94-856c-3983764bc052" />
+
+<img width="1918" height="931" alt="docker hub images" src="https://github.com/user-attachments/assets/1698de74-50b0-4d27-8a70-ac028f783451" />
+
+<img width="1912" height="597" alt="docker 1" src="https://github.com/user-attachments/assets/890efb84-3561-4e2f-8f31-0cea48a8a816" />
+
+
 MongoDB:
 docker exec -it <mongodb-container> mongosh -u root -p examplepassword
