@@ -1,13 +1,14 @@
-# frontend/Dockerfile
-FROM node:18-alpine AS build
+FROM node:20-bullseye AS builder
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
-RUN npm run build -- --outputPath=dist --configuration=production || npm run build
+
+RUN npx -y @angular/cli@latest build --configuration production
 
 FROM nginx:stable-alpine
-RUN rm -rf /usr/share/nginx/html/*
-COPY --from=build /app/dist/angular-15-crud/ /usr/share/nginx/html
+COPY --from=builder /app/dist/angular-15-crud /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
