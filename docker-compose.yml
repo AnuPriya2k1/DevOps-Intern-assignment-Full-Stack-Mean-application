@@ -1,61 +1,48 @@
-version: '3.8'
-
 services:
-  mongo:
-    image: mongo:6.0
-    container_name: mean_mongo
+  mongodb:
+    image: mongo:6
     restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: examplepassword
-    volumes:
-      - mongo_data:/data/db
-    ports:
-      - "27017:27017"
+    networks:
+      - app-net
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: mean_backend
-    restart: unless-stopped
+    build: ./backend
     depends_on:
-      - mongo
+      - mongodb
     environment:
+      MONGO_URL: "mongodb://root:examplepassword@mongodb:27017/yourdbname?authSource=admin"
       PORT: 3000
-      MONGO_URI: mongodb://root:examplepassword@mongo:27017/mean_db?authSource=admin
-      MONGODB_URI: mongodb://root:examplepassword@mongo:27017/mean_db?authSource=admin
+    restart: unless-stopped
     networks:
-      - mean_net
+      - app-net
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: mean_frontend
-    restart: unless-stopped
+    build: ./frontend
     depends_on:
       - backend
     networks:
-      - mean_net
+      - app-net
 
   nginx:
     image: nginx:stable-alpine
-    container_name: mean_nginx
-    depends_on:
-      - frontend
-      - backend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy:/etc/nginx/conf.d:ro
+      - ./frontend/dist/angular-15-crud:/usr/share/nginx/html:ro
     ports:
       - "80:80"
-    restart: unless-stopped
+    depends_on:
+      - backend
     networks:
-      - mean_net
+      - app-net
 
 volumes:
-  mongo_data:
+  mongo-data:
 
 networks:
-  mean_net:
+  app-net:
     driver: bridge
