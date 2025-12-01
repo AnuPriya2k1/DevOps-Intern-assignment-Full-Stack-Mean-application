@@ -1,28 +1,30 @@
 services:
+
   mongodb:
     image: mongo:6
     restart: unless-stopped
-    volumes:
-      - mongo-data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: examplepassword
+    volumes:
+      - mongo-data:/data/db
     networks:
       - app-net
 
   backend:
-    build: ./backend
-    depends_on:
-      - mongodb
+    image: ${DOCKERHUB_USERNAME:-ganu468}/crud-mean-app-backend:latest
+    restart: unless-stopped
     environment:
       MONGO_URL: "mongodb://root:examplepassword@mongodb:27017/yourdbname?authSource=admin"
       PORT: 3000
-    restart: unless-stopped
+    depends_on:
+      - mongodb
     networks:
       - app-net
 
   frontend:
-    build: ./frontend
+    image: ${DOCKERHUB_USERNAME:-ganu468}/crud-mean-app-frontend:latest
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
@@ -30,13 +32,14 @@ services:
 
   nginx:
     image: nginx:stable-alpine
+    restart: unless-stopped
     volumes:
       - ./deploy:/etc/nginx/conf.d:ro
       - ./frontend/dist/angular-15-crud:/usr/share/nginx/html:ro
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - frontend
     networks:
       - app-net
 
